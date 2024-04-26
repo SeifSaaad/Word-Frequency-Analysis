@@ -1,60 +1,53 @@
 import nltk
-# nltk.download('punkt')
-from nltk.corpus import stopwords
-from collections import Counter
 import string
+from nltk.corpus import stopwords  
+from collections import Counter
 
-# Read file
-def read_file(file_path):
+# nltk.download('punkt')
+
+def read_file(file_name):
     try:
-        with open("paragraphs.txt", 'r') as file:
-            text = file.read()
-        return text
+        with open(paragraphs.txt, 'r') as file:
+            contents = file.read()
+            return contents
     except FileNotFoundError:
-        print("File not found.")
-        return None
-    except Exception as e:
-        print("An error occurred:", e)
+        print("The file couldn't be found.")
         return None
 
-# Remove stop words and punctuation
-def preprocess_text(text):
+def clean_words(text):
     stop_words = set(stopwords.words('english'))
-    translator = str.maketrans('', '', string.punctuation)
-    words = nltk.word_tokenize(text.lower())
-    filtered_words = [word.translate(translator) for word in words if word not in stop_words]
-    return filtered_words
 
-# Count word frequencies
-def count_word_frequencies(words):
+    # Remove punctuation
+    for character in string.punctuation: 
+        text = text.replace(character, '')
+
+    words = text.lower().split()  # Split into words and make lowercase
+    clean_words = [word for word in words if word not in stop_words]
+    return clean_words
+
+def count_words(words):
     word_counts = Counter(words)
     return word_counts
 
-# Display word frequency count
-def display_word_frequencies(word_counts):
+def show_word_counts(word_counts):
     for word, count in word_counts.items():
-        print(f"{word}: {count}")
-        
-# Save word frequency count to a text file
-def save_word_frequencies_to_file(word_counts, output_file):
+        print(word, ":", count)
+
+def save_counts(word_counts, output_file_name):
     try:
-        with open(output_file, 'w') as file:
+        with open(output_file_name, 'w') as file:
             for word, count in word_counts.items():
-                file.write(f"{word}: {count}\n")
-        print("Word frequency count saved to", output_file)
+                file.write(word + ": " + str(count) + "\n")
+        print("Word counts saved!")
     except Exception as e:
-        print("An error occurred while saving the file:", e)
+        print("Error saving:", e)
 
-# Main function
-def main():
-    file_path = "paragraphs.txt"
-    output_file = "word_frequencies.txt"
-    text = read_file(file_path)
-    if text:
-        words = preprocess_text(text)
-        word_counts = count_word_frequencies(words)
-        display_word_frequencies(word_counts)
-        save_word_frequencies_to_file(word_counts, output_file)
+file_name = "paragraphs.txt"
+output_file_name = "word_frequencies.txt"
 
-if __name__ == "__main__":
-    main()
+text = read_file(file_name)
+if text:
+    clean_words = clean_words(text)
+    word_counts = count_words(clean_words)
+    show_word_counts(word_counts)
+    save_counts(word_counts, output_file_name) 
